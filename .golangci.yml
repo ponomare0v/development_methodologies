@@ -1,0 +1,17 @@
+run:
+  timeout: 5m
+#Этот конфиг включает основные анализаторы кода.
+linters:
+  enable:
+    - govet
+    - errcheck
+    - staticcheck
+    - gofmt
+    - gocritic
+    - unused
+    - unconvert
+
+issues:
+  max-issues-per-linter: 0
+  max-same-issues: 0
+  exclude-use-default: false
