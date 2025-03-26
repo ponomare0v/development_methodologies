@@ -1,13 +1,11 @@
 package games
 
 import (
-	"bufio"
-	"fmt"
-	"os"
+	"math/rand"
 	"strconv"
+	"time"
 )
 
-// Функция для нахождения НОК
 func gcd(a, b int) int {
 	for b != 0 {
 		a, b = b, a%b
@@ -19,40 +17,38 @@ func lcm(a, b int) int {
 	return (a * b) / gcd(a, b)
 }
 
-func lcmOfThree(a, b, c int) int {
-	return lcm(lcm(a, b), c)
+type lcmGame struct {
+	question []int
+	answer   int
+	rules    string
 }
 
-func PlayNokGame() {
-	fmt.Println("Welcome to the Brain Games!")
-	fmt.Print("May I have your name? ")
-	scanner := bufio.NewScanner(os.Stdin)
-	scanner.Scan()
-	name := scanner.Text()
-	fmt.Printf("Hello, %s!\n", name)
-	fmt.Println("Find the smallest common multiple of given numbers.")
-
-	questions := [][]int{
-		{5, 7, 15},
-		{100, 50, 1},
-		{3, 9, 27},
+func (cur *lcmGame) Generate() error {
+	rng := rand.New(rand.NewSource(time.Now().UnixNano())) // Используем локальный генератор
+	cur.question = make([]int, 3)
+	for i := range cur.question {
+		cur.question[i] = rng.Intn(50) + 1
 	}
+	cur.answer = lcm(cur.question[0], lcm(cur.question[1], cur.question[2]))
+	return nil
+}
 
-	for _, nums := range questions {
-		fmt.Printf("Question: %d %d %d\n", nums[0], nums[1], nums[2])
-		fmt.Print("Your answer: ")
-		scanner.Scan()
-		answer, _ := strconv.Atoi(scanner.Text())
+func (cur *lcmGame) GetAnswer() int {
+	return cur.answer
+}
 
-		correctAnswer := lcmOfThree(nums[0], nums[1], nums[2])
-		if answer == correctAnswer {
-			fmt.Println("Correct!")
-		} else {
-			fmt.Printf("'%d' is wrong answer ;(. Correct answer was '%d'.\n", answer, correctAnswer)
-			fmt.Printf("Let's try again, %s!\n", name)
-			return
-		}
+func (cur *lcmGame) GetQuestion() []string {
+	question := make([]string, 3)
+	for i := 0; i < 3; i++ {
+		question[i] = strconv.Itoa(cur.question[i])
 	}
+	return question
+}
 
-	fmt.Printf("Congratulations, %s!\n", name)
+func (cur *lcmGame) GetRules() string {
+	return cur.rules
+}
+
+func LcmGame() Game {
+	return &lcmGame{rules: "Find the smallest common multiple of given numbers."}
 }
